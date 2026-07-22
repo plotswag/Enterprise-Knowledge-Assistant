@@ -9,16 +9,17 @@ langchain-huggingface==1.2.2
 
 groq==0.37.1
 
-faiss-cpu==1.14.3
+faiss-cpu==1.14.0
+
 sentence-transformers==5.6.0
-transformers==5.14.1
-torch==2.13.0
+transformers
+torch
 
-huggingface-hub==1.24.0
+huggingface-hub
 
-pypdf==6.14.2
+pypdf
 
-python-dotenv==1.2.2
+python-dotenv
 
 pandas==2.2.3
-numpy==2.3.2
+numpy>=2.1.0
