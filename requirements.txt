@@ -13,12 +13,6 @@ faiss-cpu==1.14.3
 
 sentence-transformers==2.7.0
 transformers==4.41.2
-torch>=2.9.1
-
-faiss-cpu==1.14.3
-
-sentence-transformers==2.7.0
-transformers==4.41.2
 torch
 
 pypdf
@@ -26,4 +20,3 @@ python-dotenv
 
 pandas==2.2.3
 numpy>=2.1.0
-
