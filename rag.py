@@ -1,5 +1,6 @@
 import os
 from dotenv import load_dotenv
+import streamlit as st
 
 from langchain_community.vectorstores import FAISS
 from langchain_huggingface import HuggingFaceEmbeddings
@@ -80,49 +81,66 @@ VECTOR_DB_PATH = os.path.join(
 # Embedding Model
 # ==========================================================
 
-embeddings = HuggingFaceEmbeddings(
-    model_name="BAAI/bge-base-en-v1.5"
-)
-
-
 # ==========================================================
-# Load FAISS Vector Database
+# Load FAISS Vector Database (Cached)
 # ==========================================================
 
-vector_db = FAISS.load_local(
-    folder_path=VECTOR_DB_PATH,
-    embeddings=embeddings,
-    index_name="technova_faiss",
-    allow_dangerous_deserialization=True
-)
+@st.cache_resource
+def load_vector_db():
 
-print("✅ Vector DB Loaded Successfully")
-print(f"📄 Total Chunks : {vector_db.index.ntotal}")
+    embeddings = HuggingFaceEmbeddings(
+        model_name="sentence-transformers/all-MiniLM-L6-v2"
+    )
 
+    vector_db = FAISS.load_local(
+        folder_path=VECTOR_DB_PATH,
+        embeddings=embeddings,
+        index_name="technova_faiss",
+        allow_dangerous_deserialization=True
+    )
+
+    print("✅ Vector DB Loaded Successfully")
+
+    return vector_db
+
+
+vector_db = load_vector_db()
 
 # ==========================================================
 # Retriever
 # ==========================================================
+@st.cache_resource
+def load_rag_chain():
 
-retriever = vector_db.as_retriever(
-    search_type="mmr",
-    search_kwargs={
-        "k": 5,
-        "fetch_k": 20,
-        "lambda_mult": 0.7
-    }
-)
+    retriever = vector_db.as_retriever(
+        search_type="mmr",
+        search_kwargs={
+            "k": 5,
+            "fetch_k": 20,
+            "lambda_mult": 0.7
+        }
+    )
+
+    llm = ChatGroq(
+        model="llama-3.3-70b-versatile",
+        temperature=0.2,
+        api_key=GROQ_API_KEY
+    )
+
+    document_chain = create_stuff_documents_chain(
+        llm,
+        prompt
+    )
+
+    retrieval_chain = create_retrieval_chain(
+        retriever,
+        document_chain
+    )
+
+    return retrieval_chain, llm
 
 
-# ==========================================================
-# Large Language Model
-# ==========================================================
-
-llm = ChatGroq(
-    model="llama-3.3-70b-versatile",
-    temperature=0.2,
-    api_key=GROQ_API_KEY
-)
+retrieval_chain, llm = load_rag_chain()
 # ==========================================================
 # Prompt Template
 # ==========================================================
