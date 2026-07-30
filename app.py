@@ -1,3 +1,4 @@
+print("🔥 APP.PY IS LOADING")
 import streamlit as st
 from rag import ask_question, clear_chat
 
@@ -11,6 +12,7 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="expanded"
 )
+
 
 # ==========================================================
 # CUSTOM CSS
@@ -527,7 +529,7 @@ border:1px solid rgba(255,255,255,0.08);">
 
 Powered by
 <b>LangChain</b> •
-<b>Groq</b> •
+<b>Groq</b> 
 <b>FAISS</b> •
 <b>HuggingFace</b> •
 <b>Streamlit</b>
